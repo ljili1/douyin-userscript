@@ -17,11 +17,19 @@
 ## 安装
 
 1. 先安装任意用户脚本管理器：[ScriptCat](https://scriptcat.org/) / [Tampermonkey](https://www.tampermonkey.net/) / [Violentmonkey](https://violentmonkey.github.io/)。
-2. 点击下方链接安装：
+2. 点击下方链接安装（任选其一）：
 
-   ```
-   https://raw.githubusercontent.com/ljili1/douyin-userscript/main/douyin-optimize.user.js
-   ```
+   - 国内加速镜像（jsDelivr，推荐）：
+
+     ```
+     https://cdn.jsdelivr.net/gh/ljili1/douyin-userscript@main/douyin-optimize.user.js
+     ```
+
+   - GitHub 直连（raw）：
+
+     ```
+     https://raw.githubusercontent.com/ljili1/douyin-userscript/main/douyin-optimize.user.js
+     ```
 
 ## 版本
 
