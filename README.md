@@ -2,7 +2,7 @@
 
 基于 [WhiteSevs/TamperMonkeyScript](https://github.com/WhiteSevs/TamperMonkeyScript) 的「抖音优化」用户脚本
 （ScriptCat 脚本页 [id=2534](https://scriptcat.org/zh-CN/script-show-page/2534)）的定制分支，
-在官方 **2026.9.14** 的基础上合并了个人定制的功能。
+在官方 **2026.9.17.17** 的基础上合并了个人定制的功能。
 
 ## 定制功能（相对官方版）
 
@@ -33,7 +33,8 @@
 
 ## 版本
 
-- 当前基于官方 `2026.9.14`（2026-09-15 合并）
+- 当前基于官方 `2026.9.17.17`（2026-09-18 合并）
+- 已合入的上游增量（9.14 → 9.17）：设置面板 `.pops` 最大高度 `90dvh` 限制、快捷键忽略逻辑重构（支持 `$target` 传入与 `contenteditable` 判断、修复空格键误触）、下载按钮快捷键提示
 - 本定制版脚本未设置 `@updateURL` / `@downloadURL`，安装后不会被上游自动覆盖。
 
 ## 许可与致谢

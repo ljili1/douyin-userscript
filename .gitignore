@@ -6,3 +6,8 @@
 Thumbs.db
 *.swp
 *~
+
+# 本地历史版本与比对产物（仓库仅托管最新脚本 douyin-optimize.user.js）
+抖音优化_*.user.js
+抖音优化_*.md
+*.diff
