@@ -4018,10 +4018,12 @@
     hideLeftNavigatorOnHover() {
       log.info("启用隐藏左侧导航栏（悬停显示）");
       const result = [];
-      /* 触发区宽度：仅左侧 8px 窄条。
-         与顶部导航悬停触发的 8px 高度保持一致；
-         过宽（原 30px）会导致鼠标在内容/视频区左侧附近移动时误触发滑出 */
-      const HOVER_ZONE_WIDTH = 8;
+      /* 触发条件：仅当鼠标「触达视口最左边缘」时才滑出。
+         贴边时浏览器会把 clientX 钳制为 0（继续往左推仍保持 0），
+         故以 0 作为临界值，即可区分「鼠标路过左侧」与「主动顶到屏幕边缘」，
+         从根本上消除在内容/视频区左侧移动造成的误触发。
+         EDGE_TRIGGER_PX 为容差，吸收高分屏/子像素取整产生的 1px 误差；设为 0 即严格只认贴边。 */
+      const EDGE_TRIGGER_PX = 1;
       const $style = addStyle(`
         /* 左侧导航栏改成悬浮层，脱离 flex 布局：隐藏后不再占位，右侧内容区自动占满 */
         #douyin-navigation {
@@ -4062,15 +4064,23 @@
       let lastTime = 0;
       const THROTTLE_MS = 50;
       const onMouseMove = (event) => {
+        /* 边缘临界值判定必须放在节流之前：一是纯数值比较零成本，
+           二是「甩到边缘」的关键事件若被节流丢弃，会导致触发彻底失效
+           （鼠标顶住边缘后不再产生新的位移，没有第二次机会）。 */
+        const atEdge = event.clientX <= EDGE_TRIGGER_PX;
         const now = Date.now();
-        if (now - lastTime < THROTTLE_MS) return;
-        lastTime = now;
+        if (!atEdge) {
+          if (now - lastTime < THROTTLE_MS) return;
+          lastTime = now;
+        }
         const $nav = $("#douyin-navigation");
         if (!$nav) return;
-        const inZone = event.clientX < HOVER_ZONE_WIDTH;
-        const inNav = $nav.matches(":hover");
-        const shouldShow = inZone || inNav;
         const isVisible = $nav.classList.contains("dy-leftnav-hover-visible");
+        /* 滞回（保持）判定：滑出动画耗时 0.3s，鼠标从边缘移向导航的途中导航尚未覆盖到光标位置，
+           若此时只认 :hover 会误判为「已离开」而立刻收回，形成滑出后回弹的闪烁。
+           故一旦滑出，只要光标仍在导航占位宽度内（0 ~ navWidth）就继续显示，超出即收起。 */
+        const shouldShow =
+          atEdge || (isVisible && event.clientX <= ($nav.offsetWidth || 160));
         if (shouldShow && !isVisible) {
           $nav.classList.add("dy-leftnav-hover-visible");
         } else if (!shouldShow && isVisible) {
@@ -4562,9 +4572,10 @@
     hideTopNavigatorOnHover() {
       log.info("启用隐藏顶部导航栏（悬停显示）");
       const result = [];
-      /* 触发区高度：仅顶部 8px 窄条，与左侧导航悬停触发的 8px 宽度保持一致，
-         过宽会导致鼠标在内容区顶部附近移动时误触发标题栏滑出 */
-      const HOVER_ZONE_HEIGHT = 8;
+      /* 触发条件：仅当鼠标「触达视口最上边缘」（clientY 被钳制为 0）时才显示，
+         与左侧导航的「屏幕边缘临界值」触发保持一致。
+         EDGE_TRIGGER_PX 为 1px 容差，设为 0 即严格只认贴边。 */
+      const EDGE_TRIGGER_PX = 1;
       const $style = addStyle(`
         #douyin-header {
           transform: translateY(-100%) !important;
@@ -4619,15 +4630,19 @@
         }
       };
       const onMouseMove = (event) => {
+        /* 边缘临界值判定置于节流之前，理由同左侧导航：甩到顶边的关键事件不可被节流丢弃 */
+        const atEdge = event.clientY <= EDGE_TRIGGER_PX;
         const now = Date.now();
-        if (now - lastTime < THROTTLE_MS) return;
-        lastTime = now;
+        if (!atEdge) {
+          if (now - lastTime < THROTTLE_MS) return;
+          lastTime = now;
+        }
         const $header = $("#douyin-header");
         if (!$header) return;
-        const inZone = event.clientY < HOVER_ZONE_HEIGHT;
-        const inHeader = $header.matches(":hover");
-        const shouldShow = inZone || inHeader;
         const isVisible = $header.classList.contains("dy-header-hover-visible");
+        /* 滞回（保持）判定：同左侧导航，避免下滑动画未覆盖光标时被误判为「已离开」 */
+        const shouldShow =
+          atEdge || (isVisible && event.clientY <= ($header.offsetHeight || 56));
         if (shouldShow && !isVisible) {
           $header.classList.add("dy-header-hover-visible");
           headerHiddenState = false;
@@ -13976,7 +13991,7 @@
                     "hide-leftNav-on-hover",
                     false,
                     void 0,
-                    "开启后左侧导航栏默认隐藏，鼠标移入左侧边缘自动滑出显示，移出自动隐藏，不影响视频播放"
+                    "开启后左侧导航栏默认隐藏；鼠标顶到屏幕最左边缘时自动滑出，移出导航区域自动收起。仅认边缘临界值，不影响视频播放"
                   ),
                 ],
               },
@@ -14042,7 +14057,7 @@
                     "hide-topNav-on-hover",
                     false,
                     void 0,
-                    "开启后顶部导航栏默认隐藏，鼠标移入顶部区域自动显示，移出自动隐藏，不影响视频播放"
+                    "开启后顶部导航栏默认隐藏；鼠标顶到屏幕最上边缘时自动显示，移出后自动收起。仅认边缘临界值，不影响视频播放"
                   ),
                   UISwitch("【屏蔽】AI搜索", "shield-topNav-ai-search"),
                   UISwitch("【屏蔽】客户端提示", "shieldClientTip", true),
