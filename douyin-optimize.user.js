@@ -4018,7 +4018,10 @@
     hideLeftNavigatorOnHover() {
       log.info("启用隐藏左侧导航栏（悬停显示）");
       const result = [];
-      const HOVER_ZONE_WIDTH = 30;
+      /* 触发区宽度：仅左侧 12px 窄条。
+         与顶部导航悬停触发的 12px 高度保持一致；
+         过宽（原 30px）会导致鼠标在内容/视频区左侧附近移动时误触发滑出 */
+      const HOVER_ZONE_WIDTH = 12;
       const $style = addStyle(`
         /* 左侧导航栏改成悬浮层，脱离 flex 布局：隐藏后不再占位，右侧内容区自动占满 */
         #douyin-navigation {
