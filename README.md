@@ -14,6 +14,28 @@
 
 > 上述功能需在脚本的【设置】面板中手动开启。
 
+## 补充包（自定义功能独立版）
+
+`douyin-optimize-addon.user.js`：把上表中的全部自定义功能抽成了**独立小脚本**（约 400 行），
+不依赖主脚本，可与 WhiteSevs 官方原版「抖音优化」搭配使用，也可单独安装。
+
+- 功能与定制分支完全一致：左/顶部导航悬停显隐（屏幕边缘临界值触发 + 滞回保持）、消息面板贴顶修复、`removeStyleBottom` 增强。
+- 三个功能各有独立开关，在脚本管理器菜单中点击即可切换，**即时生效、无需刷新页面**；开关状态持久保存。
+- 若同时使用本仓库的定制分支主脚本，请只在一处开启同名功能（重复开启无副作用，但浪费资源）。
+- 安装链接：
+
+  - 国内加速镜像（jsDelivr，推荐）：
+
+    ```
+    https://cdn.jsdelivr.net/gh/ljili1/douyin-userscript@main/douyin-optimize-addon.user.js
+    ```
+
+  - GitHub 直连（raw）：
+
+    ```
+    https://raw.githubusercontent.com/ljili1/douyin-userscript/main/douyin-optimize-addon.user.js
+    ```
+
 ## 安装
 
 1. 先安装任意用户脚本管理器：[ScriptCat](https://scriptcat.org/) / [Tampermonkey](https://www.tampermonkey.net/) / [Violentmonkey](https://violentmonkey.github.io/)。
@@ -36,7 +58,8 @@
 - 当前基于官方 `2026.9.17.17`（2026-09-18 合并）
 - 已合入的上游增量（9.14 → 9.17）：设置面板 `.pops` 最大高度 `90dvh` 限制、快捷键忽略逻辑重构（支持 `$target` 传入与 `contenteditable` 判断、修复空格键误触）、下载按钮快捷键提示
 - 定制调整（2026-09-19）：左/顶部导航悬停触发由「固定窄带」（30px → 12px → 8px）改为**屏幕边缘临界值触发**（`clientX/clientY ≤ 1px`），彻底消除内容区移动时的误触发；同时补充滞回保持判定与边缘事件免节流处理
-- 本定制版脚本未设置 `@updateURL` / `@downloadURL`，安装后不会被上游自动覆盖。
+- 补充包独立版（2026-09-28）：新增 `douyin-optimize-addon.user.js`，全部自定义功能脱离主脚本独立交付
+- 本定制版主脚本未设置 `@updateURL` / `@downloadURL`，安装后不会被上游自动覆盖；补充包脚本指向本仓库 jsDelivr 地址，可随本仓库更新自动升级。
 
 ## 许可与致谢
 
